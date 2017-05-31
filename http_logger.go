@@ -87,7 +87,7 @@ func (l *HTTPLoggerEntry) Write(status, bytes int, elapsed time.Duration) {
 
 	if status >= 200 && status < 400 {
 		l.Logger.Info("successful request")
-	} else if status >= 400 && status < 500 {
+	} else if status >= 400 && status < 600 {
 		l.Logger.Warn("error while request")
 	}
 
