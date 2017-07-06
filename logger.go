@@ -11,6 +11,8 @@ import (
 
 type LoggingConfig struct {
 	Host string `yaml:"host"`
+	TLS bool `yaml:"tls"`
+	InsecureSkipVerify bool `yaml:"insecure_skip_verify"`
 }
 
 var Logger = logrus.New()
