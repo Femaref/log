@@ -7,6 +7,8 @@ import (
 	"github.com/femaref/reliable_conn"
 	"io"
 	"os"
+	"net"
+	"crypto/tls"
 )
 
 type LoggingConfig struct {
@@ -28,7 +30,14 @@ func init() {
 
 func Configure(appName string, cfg LoggingConfig) (io.Closer, error) {
 	if cfg.Host != "" {
-		conn, err := reliable_conn.Dial("tcp", cfg.Host)
+        var d reliable_conn.Dialer
+	    if cfg.TLS {
+            d = func(network, address string) (net.Conn, error) {
+                config := &tls.Config{InsecureSkipVerify:cfg.InsecureSkipVerify}
+                return tls.Dial(network, address, config)
+            }
+	    }
+		conn, err := reliable_conn.DialWithDialer("tcp", cfg.Host, d)
 
 		if err != nil {
 			return nil, err
