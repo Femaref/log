@@ -6,7 +6,7 @@ package log
 import (
 	stdlog "log"
 
-	"github.com/Sirupsen/logrus"
+	"github.com/sirupsen/logrus"
 )
 
 func RedirectStdlogOutput(logger *logrus.Logger) {
