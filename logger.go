@@ -43,15 +43,7 @@ func Configure(appName string, cfg LoggingConfig) (io.Closer, error) {
 			return nil, err
 		}
 
-		hook, err := logrus_logstash.NewHookWithFieldsAndConn(conn, appName, logrus.Fields{})
-		if err != nil {
-			return nil, err
-		}
-		hook.WithPrefix("_")
-
-		if err != nil {
-			return nil, err
-		}
+		hook := logrustash.New(conn, logrustash.DefaultFormatter(logrus.Fields{"type": appName}))
 		Logger.Hooks.Add(hook)
 	}
 	return Setup(appName)
