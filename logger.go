@@ -1,20 +1,22 @@
 package log
 
 import (
+	"crypto/tls"
 	"fmt"
-	"github.com/sirupsen/logrus"
+	"io"
+	"net"
+	"os"
+
 	"github.com/bshuster-repo/logrus-logstash-hook"
 	"github.com/femaref/reliable_conn"
-	"io"
-	"os"
-	"net"
-	"crypto/tls"
+	"github.com/sirupsen/logrus"
+	"golang.org/x/crypto/ssh/terminal"
 )
 
 type LoggingConfig struct {
-	Host string `yaml:"host"`
-	TLS bool `yaml:"tls"`
-	InsecureSkipVerify bool `yaml:"insecure_skip_verify"`
+	Host               string `yaml:"host"`
+	TLS                bool   `yaml:"tls"`
+	InsecureSkipVerify bool   `yaml:"insecure_skip_verify"`
 }
 
 var Logger = logrus.New()
@@ -45,13 +47,13 @@ func init() {
 
 func Configure(appName string, cfg LoggingConfig) (io.Closer, error) {
 	if cfg.Host != "" {
-        var d reliable_conn.Dialer
-	    if cfg.TLS {
-            d = func(network, address string) (net.Conn, error) {
-                config := &tls.Config{InsecureSkipVerify:cfg.InsecureSkipVerify}
-                return tls.Dial(network, address, config)
-            }
-	    }
+		var d reliable_conn.Dialer
+		if cfg.TLS {
+			d = func(network, address string) (net.Conn, error) {
+				config := &tls.Config{InsecureSkipVerify: cfg.InsecureSkipVerify}
+				return tls.Dial(network, address, config)
+			}
+		}
 		conn, err := reliable_conn.DialWithDialer("tcp", cfg.Host, d)
 
 		if err != nil {
