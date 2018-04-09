@@ -20,10 +20,25 @@ type LoggingConfig struct {
 var Logger = logrus.New()
 var Local = logrus.New()
 
+func writable(f *os.File) bool {
+	fi, _ := f.Stat()
+
+	var is_regular bool = fi.Mode().IsRegular()
+	var is_terminal bool = terminal.IsTerminal(int(f.Fd()))
+
+	return is_regular || is_terminal
+}
+
 func init() {
 	// Output to stderr instead of stdout, could also be a file.
-	Logger.Out = os.Stdout
-	Local.Out = os.Stdout
+	Logger.Out = nil
+	Local.Out = nil
+
+	if writable(os.Stdout) {
+		Logger.Out = os.Stdout
+		Local.Out = os.Stdout
+	}
+
 	RedirectStdlogOutput(Logger)
 	DefaultLogger = Logger
 }
