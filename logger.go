@@ -69,8 +69,16 @@ func Configure(appName string, cfg LoggingConfig) (io.Closer, error) {
 func Setup(appName string) (io.Closer, error) {
 	f, err := os.OpenFile(fmt.Sprintf("%s.log", appName), os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
 	if err == nil {
-		Logger.Out = io.MultiWriter(f, Logger.Out)
-		Local.Out = io.MultiWriter(f, Local.Out)
+		if Logger.Out != nil {
+			Logger.Out = io.MultiWriter(f, Logger.Out)
+		} else {
+			Logger.Out = f
+		}
+		if Local.Out != nil {
+			Local.Out = io.MultiWriter(f, Local.Out)
+		} else {
+			Local.Out = f
+		}
 	}
 
 	return f, err
