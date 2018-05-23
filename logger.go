@@ -45,7 +45,7 @@ func init() {
 	DefaultLogger = Logger
 }
 
-func Configure(appName string, cfg LoggingConfig) (io.Closer, error) {
+func Configure(appName string, defaults logrus.Fields, cfg LoggingConfig) (io.Closer, error) {
 	if cfg.Host != "" {
 		var d reliable_conn.Dialer
 		if cfg.TLS {
@@ -60,7 +60,11 @@ func Configure(appName string, cfg LoggingConfig) (io.Closer, error) {
 			return nil, err
 		}
 
-		hook := logrustash.New(conn, logrustash.DefaultFormatter(logrus.Fields{"type": appName}))
+		if _, ok := defaults["type"]; !ok {
+			defaults["type"] = appName
+		}
+
+		hook := logrustash.New(conn, logrustash.DefaultFormatter(defaults))
 		Logger.Hooks.Add(hook)
 	}
 	return Setup(appName)
