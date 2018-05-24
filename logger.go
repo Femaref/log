@@ -32,14 +32,13 @@ func writable(f *os.File) bool {
 }
 
 func init() {
-	// Output to stderr instead of stdout, could also be a file.
-	Logger.Out = nil
-	Local.Out = nil
+	Logger.Out = os.Stdout
+	Local.Out = os.Stdout
 
-	if writable(os.Stdout) {
+	/*if writable(os.Stdout) {
 		Logger.Out = os.Stdout
 		Local.Out = os.Stdout
-	}
+	}*/
 
 	RedirectStdlogOutput(Logger)
 	DefaultLogger = Logger
