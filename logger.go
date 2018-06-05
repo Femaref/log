@@ -7,16 +7,33 @@ import (
 	"net"
 	"os"
 
+	"github.com/pkg/errors"
+
 	"github.com/bshuster-repo/logrus-logstash-hook"
 	"github.com/femaref/reliable_conn"
 	"github.com/sirupsen/logrus"
 	"golang.org/x/crypto/ssh/terminal"
 )
 
-type LoggingConfig struct {
+type Config struct {
+	Base     BaseConfig     `yaml:"base"`
+	Logstash LogstashConfig `yaml:"logstash"`
+}
+
+type BaseConfig struct {
+	Name   string `yaml:"name"`
+	File   bool   `yaml:"file"`
+	Stdout bool   `yaml:"stdout"`
+}
+
+type LogstashConfig struct {
 	Host               string `yaml:"host"`
 	TLS                bool   `yaml:"tls"`
 	InsecureSkipVerify bool   `yaml:"insecure_skip_verify"`
+}
+
+func (this LogstashConfig) Valid() bool {
+	return this.Host != ""
 }
 
 var Logger = logrus.New()
@@ -32,57 +49,66 @@ func writable(f *os.File) bool {
 }
 
 func init() {
-	Logger.Out = os.Stdout
-	Local.Out = os.Stdout
-
-	/*if writable(os.Stdout) {
-		Logger.Out = os.Stdout
-		Local.Out = os.Stdout
-	}*/
-
 	RedirectStdlogOutput(Logger)
 	DefaultLogger = Logger
 }
 
-func Configure(appName string, defaults logrus.Fields, cfg LoggingConfig) (io.Closer, error) {
-	if cfg.Host != "" {
+func Configure(cfg Config, defaults logrus.Fields) (io.Closer, error) {
+	if cfg.Logstash.Valid() {
 		var d reliable_conn.Dialer
-		if cfg.TLS {
+		if cfg.Logstash.TLS {
 			d = func(network, address string) (net.Conn, error) {
-				config := &tls.Config{InsecureSkipVerify: cfg.InsecureSkipVerify}
+				config := &tls.Config{InsecureSkipVerify: cfg.Logstash.InsecureSkipVerify}
 				return tls.Dial(network, address, config)
 			}
 		}
-		conn, err := reliable_conn.DialWithDialer("tcp", cfg.Host, d)
+		conn, err := reliable_conn.DialWithDialer("tcp", cfg.Logstash.Host, d)
 
 		if err != nil {
 			return nil, err
 		}
 
 		if _, ok := defaults["type"]; !ok {
-			defaults["type"] = appName
+			defaults["type"] = cfg.Base.Name
 		}
 
 		hook := logrustash.New(conn, logrustash.DefaultFormatter(defaults))
 		Logger.Hooks.Add(hook)
 	}
-	return Setup(appName)
+	return Setup(cfg)
 }
 
-func Setup(appName string) (io.Closer, error) {
-	f, err := os.OpenFile(fmt.Sprintf("%s.log", appName), os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
-	if err == nil {
-		if Logger.Out != nil {
-			Logger.Out = io.MultiWriter(f, Logger.Out)
-		} else {
-			Logger.Out = f
+func Setup(cfg Config) (io.Closer, error) {
+
+	var f *os.File
+	var err error
+
+	var w io.Writer
+
+	if cfg.Base.File {
+		// if we want to write to file, open it
+		f, err = os.OpenFile(fmt.Sprintf("%s.log", cfg.Base.Name), os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
+
+		if err != nil {
+			return nil, err
 		}
-		if Local.Out != nil {
-			Local.Out = io.MultiWriter(f, Local.Out)
-		} else {
-			Local.Out = f
+
+		w = f
+
+		// if we also want to write to stdout, add it as multiwriter
+		if cfg.Base.Stdout {
+			w = io.MultiWriter(w, os.Stdout)
 		}
+	} else if cfg.Base.Stdout {
+		// are we only writing to stdout?
+		w = os.Stdout
+	} else {
+		// nothing selected
+		return nil, errors.New("at least one of File/Stdout has to be true")
 	}
+
+	Logger.Out = w
+	Local.Out = w
 
 	return f, err
 }

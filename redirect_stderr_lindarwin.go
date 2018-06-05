@@ -11,20 +11,23 @@ import (
 )
 
 func RedirectStderrToFile(appName string, force_redirect bool) {
-	// if it's a regular file, it's already being redirected
-	// if it's a terminal, we want to see it
-	// open /dev/null and check if the inode is the same -> don't redirect
+	// set default
+	var should_redirect bool = force_redirect
 
-	fi, _ := os.Stderr.Stat()
-	fil, _ := os.OpenFile("/dev/null", os.O_WRONLY, 0755)
-	nullstat, _ := fil.Stat()
+	if !force_redirect {
+		// if it's a regular file, it's already being redirected
+		// if it's a terminal, we want to see it
+		// open /dev/null and check if the inode is the same -> don't redirect
+		fi, _ := os.Stderr.Stat()
+		fil, _ := os.OpenFile("/dev/null", os.O_WRONLY, 0755)
+		nullstat, _ := fil.Stat()
 
-	var is_regular bool = fi.Mode().IsRegular()
-	var is_terminal bool = terminal.IsTerminal(int(os.Stderr.Fd()))
-	var is_dev_null bool = fi.Sys().(*syscall.Stat_t).Ino == nullstat.Sys().(*syscall.Stat_t).Ino
-	fil.Close()
-
-	should_redirect := !(is_regular || is_terminal || is_dev_null) || force_redirect
+		var is_regular bool = fi.Mode().IsRegular()
+		var is_terminal bool = terminal.IsTerminal(int(os.Stderr.Fd()))
+		var is_dev_null bool = fi.Sys().(*syscall.Stat_t).Ino == nullstat.Sys().(*syscall.Stat_t).Ino
+		fil.Close()
+		should_redirect = !(is_regular || is_terminal || is_dev_null)
+	}
 
 	if should_redirect {
 		logFile, _ := os.OpenFile(fmt.Sprintf("%s-panic.log", appName), os.O_WRONLY|os.O_CREATE|os.O_SYNC, 0644)
