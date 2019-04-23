@@ -10,7 +10,7 @@ import (
 	"time"
 
 	"github.com/sirupsen/logrus"
-	"github.com/pressly/chi/middleware"
+	"github.com/go-chi/chi/middleware"
 )
 
 // RequestLogger is a middleware for the github.com/Sirupsen/logrus to log requests.
