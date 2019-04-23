@@ -3,62 +3,118 @@
 
 [[projects]]
   branch = "master"
+  digest = "1:3157447cbc26bf98f0623d6c36bf6808a8139b283498ca5f76ae9b23aa8eaf54"
   name = "github.com/bshuster-repo/logrus-logstash-hook"
   packages = ["."]
+  pruneopts = ""
   revision = "ebf008572634916f3a9433d9471a0cd3f68fc772"
   source = "github.com/bshuster-repo/logrus-logstash-hook"
 
 [[projects]]
+  digest = "1:f619cb9b07aebe5416262cdd8b86082e8d5bdc5264cb3b615ff858df0b645f97"
   name = "github.com/cenkalti/backoff"
   packages = ["."]
+  pruneopts = ""
   revision = "2ea60e5f094469f9e65adb9cd103795b73ae743e"
   version = "v2.0.0"
 
 [[projects]]
+  digest = "1:0deddd908b6b4b768cfc272c16ee61e7088a60f7fe2f06c547bd3d8e1f8b8e77"
+  name = "github.com/davecgh/go-spew"
+  packages = ["spew"]
+  pruneopts = ""
+  revision = "8991bc29aa16c548c550c7ff78260e27b9ab7c73"
+  version = "v1.1.1"
+
+[[projects]]
   branch = "master"
+  digest = "1:da56ecfbb0061c31c88dde6d99ba0a32a231cd171ef0147eaa8affc939d68e46"
   name = "github.com/femaref/reliable_conn"
   packages = ["."]
+  pruneopts = ""
   revision = "19bd0de1ae3a9a75f9950a9f9bcd85bd197b978d"
 
 [[projects]]
+  digest = "1:2f4d4ba08e54c0c63693d7dd21c30c8ff6800d047efcbbe8addd5620d2625871"
   name = "github.com/go-chi/chi"
+  packages = [
+    ".",
+    "middleware",
+  ]
+  pruneopts = ""
+  revision = "e83ac2304db3c50cf03d96a2fcd39009d458bc35"
+  version = "v3.3.2"
+
+[[projects]]
+  digest = "1:1d7e1867c49a6dd9856598ef7c3123604ea3daabf5b83f303ff457bcbc410b1d"
+  name = "github.com/pkg/errors"
   packages = ["."]
-  revision = "e83ac2304db3c50cf03d96a2fcd39009d458bc35"
-  version = "v3.3.2"
+  pruneopts = ""
+  revision = "ba968bfe8b2f7e042a574c888954fccecfa385b4"
+  version = "v0.8.1"
 
 [[projects]]
-  name = "github.com/pressly/chi"
-  packages = ["middleware"]
-  revision = "e83ac2304db3c50cf03d96a2fcd39009d458bc35"
-  version = "v3.3.2"
+  digest = "1:256484dbbcd271f9ecebc6795b2df8cad4c458dd0f5fd82a8c2fa0c29f233411"
+  name = "github.com/pmezard/go-difflib"
+  packages = ["difflib"]
+  pruneopts = ""
+  revision = "792786c7400a136282c1664665ae0a8db921c6c2"
+  version = "v1.0.0"
 
 [[projects]]
+  digest = "1:8cf46b6c18a91068d446e26b67512cf16f1540b45d90b28b9533706a127f0ca6"
   name = "github.com/sirupsen/logrus"
   packages = ["."]
+  pruneopts = ""
   revision = "c155da19408a8799da419ed3eeb0cb5db0ad5dbc"
   version = "v1.0.5"
 
 [[projects]]
+  digest = "1:381bcbeb112a51493d9d998bbba207a529c73dbb49b3fd789e48c63fac1f192c"
+  name = "github.com/stretchr/testify"
+  packages = ["assert"]
+  pruneopts = ""
+  revision = "ffdc059bfe9ce6a4e144ba849dbedead332c6053"
+  version = "v1.3.0"
+
+[[projects]]
   branch = "master"
+  digest = "1:04289fa82e16fdc3230aa42e97a35a22710dba99ea33f9f2b17d8e00f3b383d3"
   name = "golang.org/x/crypto"
   packages = ["ssh/terminal"]
+  pruneopts = ""
   revision = "f70185d77e8278766928032ee1355e3da47e7181"
 
 [[projects]]
   branch = "master"
+  digest = "1:40dd5a4f1e82c4d3dc3de550a96152f6a8937bcfcb20c7ee34685f8764e1bda5"
   name = "golang.org/x/net"
   packages = ["context"]
+  pruneopts = ""
   revision = "61147c48b25b599e5b561d2e9c4f3e1ef489ca41"
 
 [[projects]]
   branch = "master"
+  digest = "1:e9490adb0a1d5ac8f621a6430754822f87e565fd71d4cd1c9c4d90626f390624"
   name = "golang.org/x/sys"
-  packages = ["unix","windows"]
+  packages = [
+    "unix",
+    "windows",
+  ]
+  pruneopts = ""
   revision = "3b87a42e500a6dc65dae1a55d0b641295971163e"
 
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "6bd1ae02bea6458cfcaea2ebde907c9536794c55067869d463580c7ada909024"
+  input-imports = [
+    "github.com/bshuster-repo/logrus-logstash-hook",
+    "github.com/femaref/reliable_conn",
+    "github.com/go-chi/chi/middleware",
+    "github.com/pkg/errors",
+    "github.com/sirupsen/logrus",
+    "github.com/stretchr/testify/assert",
+    "golang.org/x/crypto/ssh/terminal",
+  ]
   solver-name = "gps-cdcl"
   solver-version = 1
