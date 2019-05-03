@@ -74,8 +74,10 @@ func (this *FileSignalWrapper) run(signals ...os.Signal) {
 		select {
 		case <-c:
 			err := this.cycle()
-			if this.logger != nil {
-				this.logger.Error(err)
+			if err != nil {
+				if this.logger != nil {
+					this.logger.Error(err)
+				}
 			}
 		case <-this.ctx.Done():
 			return
@@ -100,6 +102,10 @@ func (this *FileSignalWrapper) cycle() error {
 
 	if err != nil {
 		return err
+	}
+
+	if this.logger != nil {
+		this.logger.Info("cycled", this.name)
 	}
 
 	return nil
