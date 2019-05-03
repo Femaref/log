@@ -1,15 +1,18 @@
 package log
 
 import (
+	"context"
 	"crypto/tls"
 	"fmt"
 	"io"
 	"net"
 	"os"
+	"syscall"
 
 	"github.com/pkg/errors"
 
-	"github.com/bshuster-repo/logrus-logstash-hook"
+	logrustash "github.com/bshuster-repo/logrus-logstash-hook"
+	"github.com/femaref/log/file_signal_wrapper"
 	"github.com/femaref/reliable_conn"
 	"github.com/sirupsen/logrus"
 	"golang.org/x/crypto/ssh/terminal"
@@ -80,14 +83,15 @@ func Configure(cfg Config, defaults logrus.Fields) (io.Closer, error) {
 
 func Setup(cfg Config) (io.Closer, error) {
 
-	var f *os.File
+	var f io.WriteCloser
 	var err error
 
 	var w io.Writer
 
 	if cfg.Base.File {
 		// if we want to write to file, open it
-		f, err = os.OpenFile(fmt.Sprintf("%s.log", cfg.Base.Name), os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
+
+		f, err = file_signal_wrapper.Append(context.Background(), fmt.Sprintf("%s.log", cfg.Base.Name), Local, syscall.SIGHUP)
 
 		if err != nil {
 			return nil, err
