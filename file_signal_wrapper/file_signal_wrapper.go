@@ -105,7 +105,7 @@ func (this *FileSignalWrapper) cycle() error {
 	}
 
 	if this.logger != nil {
-		this.logger.Info("cycled", this.name)
+		this.logger.Info("cycled: ", this.name)
 	}
 
 	return nil
